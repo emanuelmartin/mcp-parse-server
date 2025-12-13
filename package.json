@@ -1,0 +1,22 @@
+{
+  "name": "mcp-parse-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP Server para Parse Server con funcionalidades completas de CRUD, schemas, roles y ACL",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs",
+    "dev": "node --watch index.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "parse-server",
+    "parse",
+    "rest-api"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.24.0",
+    "dotenv": "^16.0.0"
+  }
+}
