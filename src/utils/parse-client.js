@@ -4,9 +4,9 @@ const { PARSE_URL, PARSE_APP_ID, PARSE_REST_KEY, PARSE_MASTER_KEY } = process.en
  * Helper para llamar al REST API de Parse
  * @param {string} path - Ruta del endpoint (ej: /classes/MyClass)
  * @param {object} options - Opciones de fetch
- * @param {boolean} useMasterKey - Si usar master key en lugar de REST key
+ * @param {boolean} useMasterKey - Si usar master key en lugar de REST key (por defecto true si hay master key y no hay REST key)
  */
-export async function parseRequest(path, options = {}, useMasterKey = false) {
+export async function parseRequest(path, options = {}, useMasterKey = !PARSE_REST_KEY && !!PARSE_MASTER_KEY) {
   const url = `${PARSE_URL}${path}`;
 
   const headers = {
