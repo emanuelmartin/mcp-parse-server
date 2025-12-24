@@ -84,17 +84,31 @@ export function registerSchemaTools(server) {
       const params = input.inputSchema || input;
       const { className, fields, classLevelPermissions } = params;
 
-      // Validar que className existe
       if (!className) {
         throw new Error('className is required but was not provided');
       }
 
-      // Construir el payload para Parse Server
+      // Interpreta correctamente los campos Relation y Pointer
+      const parsedFields = {};
+      if (fields) {
+        for (const [key, def] of Object.entries(fields)) {
+          if (def.type === 'Relation' || def.type === 'Pointer') {
+            parsedFields[key] = {
+              type: def.type,
+              targetClass: def.targetClass,
+              ...(def.required !== undefined ? { required: def.required } : {}),
+              ...(def.defaultValue !== undefined ? { defaultValue: def.defaultValue } : {}),
+            };
+          } else {
+            parsedFields[key] = def;
+          }
+        }
+      }
+
       const payload = {
         className,
-        fields: fields || {},
+        fields: parsedFields,
       };
-
       if (classLevelPermissions) {
         payload.classLevelPermissions = classLevelPermissions;
       }
@@ -146,11 +160,22 @@ export function registerSchemaTools(server) {
       const { className, fields, classLevelPermissions } = params;
 
       const schema = {};
-
       if (fields) {
-        schema.fields = fields;
+        const parsedFields = {};
+        for (const [key, def] of Object.entries(fields)) {
+          if (def.type === 'Relation' || def.type === 'Pointer') {
+            parsedFields[key] = {
+              type: def.type,
+              targetClass: def.targetClass,
+              ...(def.required !== undefined ? { required: def.required } : {}),
+              ...(def.defaultValue !== undefined ? { defaultValue: def.defaultValue } : {}),
+            };
+          } else {
+            parsedFields[key] = def;
+          }
+        }
+        schema.fields = parsedFields;
       }
-
       if (classLevelPermissions) {
         schema.classLevelPermissions = classLevelPermissions;
       }

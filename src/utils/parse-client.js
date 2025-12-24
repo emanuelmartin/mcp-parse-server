@@ -1,3 +1,25 @@
+/**
+ * Obtiene las relaciones (pointers y relations) de una clase en Parse Server
+ * @param {string} className - Nombre de la clase
+ * @returns {Promise<Array<{field: string, type: string, targetClass?: string}>>}
+ */
+export async function getClassRelations(className) {
+  // Requiere master key
+  const schema = await parseRequest(`/schemas/${className}`, {}, true);
+  const relations = [];
+  if (schema && schema.fields) {
+    for (const [field, def] of Object.entries(schema.fields)) {
+      if (def.type === 'Pointer' || def.type === 'Relation') {
+        relations.push({
+          field,
+          type: def.type,
+          targetClass: def.targetClass,
+        });
+      }
+    }
+  }
+  return relations;
+}
 const { PARSE_URL, PARSE_APP_ID, PARSE_REST_KEY, PARSE_MASTER_KEY } = process.env;
 
 /**

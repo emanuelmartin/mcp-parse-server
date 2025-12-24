@@ -118,6 +118,35 @@ export function registerReadTools(server) {
     }
   );
 
+  server.tool(
+    'parse_get_relation',
+    'Obtiene los objetos relacionados de un campo Relation en Parse Server. Proporciona className, objectId y relationField. Retorna el array de objetos relacionados.',
+    {
+      inputSchema: z.object({
+        className: z.string().describe('Clase principal, ej: _Role'),
+        objectId: z.string().describe('ID del objeto principal'),
+        relationField: z.string().describe('Campo de relación, ej: permissions'),
+      }),
+    },
+    async (input) => {
+      const params = input.inputSchema || input;
+      const { className, objectId, relationField } = params;
+      // Usar include para traer los objetos relacionados
+      const path = `/classes/${className}/${objectId}?include=${relationField}`;
+      const data = await parseRequest(path);
+      // Retornar solo el array de objetos relacionados si existe
+      const related = data[relationField];
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(related ?? null, null, 2),
+          },
+        ],
+      };
+    }
+  );
+
   // Tool: Contar objetos
   server.tool(
     'parse_count',
