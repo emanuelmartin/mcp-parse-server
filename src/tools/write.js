@@ -80,56 +80,6 @@ export function registerWriteTools(server) {
     }
   );
 
-  // Tool: Vincular objetos por relación (AddRelation)
-  server.tool(
-    'parse_add_relation',
-    'Vincula objetos entre sí usando campos de tipo Relation en Parse Server. Útil para asignar permisos a roles, usuarios a grupos, etc. Proporciona className, objectId, relationField y un array de objetos a vincular (con className y objectId).',
-
-    {
-      inputSchema: z.object({
-        className: z.string().describe('Clase principal, ej: _Role'),
-        objectId: z.string().describe('ID del objeto principal'),
-        relationField: z.string().describe('Campo de relación, ej: permissions'),
-        relatedObjects: z.array(
-          z.object({
-            className: z.string().describe('Clase relacionada'),
-            objectId: z.string().describe('ID del objeto relacionado'),
-          })
-        ).describe('Array de objetos a vincular'),
-      }),
-    },
-    async (input) => {
-      const params = input.inputSchema || input;
-      const { className, objectId, relationField, relatedObjects } = params;
-
-      // Construir el payload para AddRelation
-      const data = {
-        [relationField]: {
-          __op: 'AddRelation',
-          objects: relatedObjects.map(obj => ({
-            __type: 'Pointer',
-            className: obj.className,
-            objectId: obj.objectId,
-          })),
-        },
-      };
-
-      const result = await parseRequest(`/classes/${className}/${objectId}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      });
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(result, null, 2),
-          },
-        ],
-      };
-    }
-  );
-
   // Tool: Actualizar objeto
   server.tool(
     'parse_update_object',

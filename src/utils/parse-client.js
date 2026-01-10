@@ -1,3 +1,6 @@
+import https from 'https';
+import { ALLOW_SELF_SIGNED } from './config.js';
+
 /**
  * Obtiene las relaciones (pointers y relations) de una clase en Parse Server
  * @param {string} className - Nombre de la clase
@@ -21,6 +24,11 @@ export async function getClassRelations(className) {
   return relations;
 }
 const { PARSE_URL, PARSE_APP_ID, PARSE_REST_KEY, PARSE_MASTER_KEY } = process.env;
+
+// Agente HTTPS que permite certificados autofirmados si está configurado
+const httpsAgent = ALLOW_SELF_SIGNED
+  ? new https.Agent({ rejectUnauthorized: false })
+  : undefined;
 
 /**
  * Helper para llamar al REST API de Parse
@@ -48,6 +56,7 @@ export async function parseRequest(path, options = {}, useMasterKey = !PARSE_RES
       ...headers,
       ...(options.headers || {}),
     },
+    agent: httpsAgent,
   });
 
   if (!res.ok) {
@@ -56,4 +65,17 @@ export async function parseRequest(path, options = {}, useMasterKey = !PARSE_RES
   }
 
   return res.json();
+}
+
+/**
+ * Verifica la conexión con Parse Server
+ */
+export async function healthCheck() {
+  try {
+    await parseRequest('/health', {}, false);
+    console.error('[mcp-parse-server] ✓ Conexión con Parse Server establecida');
+  } catch (error) {
+    console.error('[mcp-parse-server] ⚠️  No se pudo conectar con Parse Server:', error.message);
+    // No lanzamos error para permitir que el servidor MCP inicie de todas formas
+  }
 }
