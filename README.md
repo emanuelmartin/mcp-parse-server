@@ -61,9 +61,16 @@ PARSE_URL=https://tu-parse-server.com/parse
 PARSE_APP_ID=tu-app-id
 PARSE_REST_KEY=tu-rest-key
 PARSE_MASTER_KEY=tu-master-key
+
+# Opcional: Permite certificados autofirmados (solo desarrollo)
+ALLOW_SELF_SIGNED_CERT=true
+# O alternativamente:
+# NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 
-**Nota:** `PARSE_MASTER_KEY` es opcional pero necesario para operaciones de schema, roles y algunas operaciones administrativas.
+**Notas importantes:**
+- `PARSE_MASTER_KEY` es opcional pero necesario para operaciones de schema, roles y algunas operaciones administrativas.
+- `ALLOW_SELF_SIGNED_CERT=true` permite certificados SSL autofirmados. **⚠️ Solo usar en desarrollo local, nunca en producción.**
 
 ## 🏃 Uso
 
@@ -115,7 +122,8 @@ Añade esta configuración a tu archivo de configuración MCP:
         "PARSE_URL": "https://tu-parse-server.com/parse",
         "PARSE_APP_ID": "tu-app-id",
         "PARSE_REST_KEY": "tu-rest-key",
-        "PARSE_MASTER_KEY": "tu-master-key"
+        "PARSE_MASTER_KEY": "tu-master-key",
+        "ALLOW_SELF_SIGNED_CERT": "true"
       }
     }
   }

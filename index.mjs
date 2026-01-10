@@ -1,11 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import './src/utils/config.js';
+import { healthCheck } from './src/utils/parse-client.js';
 import { registerReadTools } from './src/tools/read.js';
 import { registerWriteTools } from './src/tools/write.js';
 import { registerSchemaTools } from './src/tools/schema.js';
 import { registerSecurityTools } from './src/tools/security.js';
 import { registerCloudTools } from './src/tools/cloud.js';
+import { registerRelationTools } from './src/tools/relations.js';
 
 // =============================
 // Crear servidor MCP
@@ -23,11 +25,15 @@ registerWriteTools(server);
 registerSchemaTools(server);
 registerSecurityTools(server);
 registerCloudTools(server);
+registerRelationTools(server);
 
 // =============================
 // Conectar por STDIO (para VS Code / Copilot)
 // =============================
 async function runServer() {
+  // Verificar conexión con Parse Server
+  await healthCheck();
+  
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('[mcp-parse-server] Servidor MCP iniciado correctamente');
