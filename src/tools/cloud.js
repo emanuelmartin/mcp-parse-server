@@ -29,7 +29,7 @@ export function registerCloudTools(server) {
       const data = await parseRequest(`/functions/${functionName}`, {
         method: 'POST',
         body: JSON.stringify(params || {}),
-      });
+      }, true);
 
       return {
         content: [

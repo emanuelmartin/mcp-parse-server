@@ -363,7 +363,7 @@ export function registerSecurityTools(server) {
       const result = await parseRequest('/users', {
         method: 'POST',
         body: JSON.stringify(data),
-      });
+      }, true);
 
       return {
         content: [

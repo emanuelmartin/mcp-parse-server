@@ -1,4 +1,23 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import fs from 'fs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// 1. Intentar cargar .env del proyecto actual (donde se ejecuta opencode)
+const projectEnvPath = resolve(process.cwd(), '.env');
+if (fs.existsSync(projectEnvPath)) {
+  dotenv.config({ path: projectEnvPath, override: false });
+  console.error(`[mcp-parse-server] Cargando config del proyecto: ${projectEnvPath}`);
+}
+
+// 2. Si aun faltan variables, cargar .env local del MCP como fallback
+if (!process.env.PARSE_URL && !process.env.PARSE_SERVER_URL) {
+  const localEnvPath = resolve(__dirname, '../../.env');
+  dotenv.config({ path: localEnvPath, override: false });
+  console.error(`[mcp-parse-server] Fallback a config local: ${localEnvPath}`);
+}
 
 export const PARSE_URL = process.env.PARSE_URL || process.env.PARSE_SERVER_URL;
 export const PARSE_APP_ID = process.env.PARSE_APP_ID;

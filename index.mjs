@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+// Cargar configuración primero
 import './src/utils/config.js';
 import { healthCheck } from './src/utils/parse-client.js';
 import { registerReadTools } from './src/tools/read.js';

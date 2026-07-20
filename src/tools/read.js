@@ -32,7 +32,7 @@ export function registerReadTools(server) {
       const path = `/classes/${className}/${objectId}${
         urlParams.toString() ? `?${urlParams.toString()}` : ''
       }`;
-      const data = await parseRequest(path);
+      const data = await parseRequest(path, {}, true);
 
       return {
         content: [
@@ -105,42 +105,13 @@ export function registerReadTools(server) {
       if (include) queryParams.set('include', include);
       if (count) queryParams.set('count', '1');
 
-      const data = await parseRequest(`/classes/${className}?${queryParams.toString()}`);
+      const data = await parseRequest(`/classes/${className}?${queryParams.toString()}`, {}, true);
 
       return {
         content: [
           {
             type: 'text',
             text: JSON.stringify(data, null, 2),
-          },
-        ],
-      };
-    }
-  );
-
-  server.tool(
-    'parse_get_relation',
-    'Obtiene los objetos relacionados de un campo Relation en Parse Server. Proporciona className, objectId y relationField. Retorna el array de objetos relacionados.',
-    {
-      inputSchema: z.object({
-        className: z.string().describe('Clase principal, ej: _Role'),
-        objectId: z.string().describe('ID del objeto principal'),
-        relationField: z.string().describe('Campo de relación, ej: permissions'),
-      }),
-    },
-    async (input) => {
-      const params = input.inputSchema || input;
-      const { className, objectId, relationField } = params;
-      // Usar include para traer los objetos relacionados
-      const path = `/classes/${className}/${objectId}?include=${relationField}`;
-      const data = await parseRequest(path);
-      // Retornar solo el array de objetos relacionados si existe
-      const related = data[relationField];
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(related ?? null, null, 2),
           },
         ],
       };
@@ -172,7 +143,7 @@ export function registerReadTools(server) {
       urlParams.set('limit', '0');
       if (where) urlParams.set('where', JSON.stringify(where));
 
-      const data = await parseRequest(`/classes/${className}?${urlParams.toString()}`);
+      const data = await parseRequest(`/classes/${className}?${urlParams.toString()}`, {}, true);
 
       return {
         content: [

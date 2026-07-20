@@ -1,5 +1,10 @@
 import { z } from 'zod';
 import { parseRequest } from '../utils/parse-client.js';
+import { PARSE_URL } from '../utils/config.js';
+
+// Extract mount path once
+let MOUNT_PATH = '';
+try { MOUNT_PATH = new URL(PARSE_URL).pathname.replace(/\/$/, ''); } catch {}
 
 // Helper para valores JSON primitivos
 const jsonPrimitive = z.union([
@@ -67,7 +72,7 @@ export function registerWriteTools(server) {
       const result = await parseRequest(`/classes/${className}`, {
         method: 'POST',
         body: JSON.stringify(normalizedData),
-      });
+      }, true);
 
       return {
         content: [
@@ -135,7 +140,7 @@ export function registerWriteTools(server) {
       const result = await parseRequest(`/classes/${className}/${objectId}`, {
         method: 'PUT',
         body: JSON.stringify(normalizedData),
-      });
+      }, true);
 
       return {
         content: [
@@ -167,7 +172,7 @@ export function registerWriteTools(server) {
 
       const result = await parseRequest(`/classes/${className}/${objectId}`, {
         method: 'DELETE',
-      });
+      }, true);
 
       return {
         content: [
@@ -202,10 +207,15 @@ export function registerWriteTools(server) {
       const params = input.inputSchema || input;
       const { requests } = params;
 
+      const fixedRequests = requests.map(r => ({
+        ...r,
+        path: r.path.startsWith(MOUNT_PATH) ? r.path : `${MOUNT_PATH}${r.path}`,
+      }));
+
       const result = await parseRequest('/batch', {
         method: 'POST',
-        body: JSON.stringify({ requests }),
-      });
+        body: JSON.stringify({ requests: fixedRequests }),
+      }, true);
 
       return {
         content: [
@@ -245,7 +255,7 @@ export function registerWriteTools(server) {
       const result = await parseRequest(`/classes/${className}/${objectId}`, {
         method: 'PUT',
         body: JSON.stringify(data),
-      });
+      }, true);
 
       return {
         content: [
@@ -293,7 +303,7 @@ export function registerWriteTools(server) {
       const result = await parseRequest(`/classes/${className}/${objectId}`, {
         method: 'PUT',
         body: JSON.stringify(data),
-      });
+      }, true);
 
       return {
         content: [
@@ -336,7 +346,7 @@ export function registerWriteTools(server) {
       const result = await parseRequest(`/classes/${className}/${objectId}`, {
         method: 'PUT',
         body: JSON.stringify(data),
-      });
+      }, true);
 
       return {
         content: [

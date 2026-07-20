@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "parse-server": {
+      "type": "local",
+      "command": ["node", "index.mjs"],
+      "enabled": true
+    }
+  }
+}

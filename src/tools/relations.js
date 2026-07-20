@@ -187,7 +187,7 @@ export function registerRelationTools(server) {
       if (skip) urlParams.set('skip', skip.toString());
 
       // Para obtener el targetClassName, primero obtenemos el esquema del campo
-      const schemaData = await parseRequest(`/schemas/${className}`, {}, false);
+      const schemaData = await parseRequest(`/schemas/${className}`, {}, true);
       const targetClassName = schemaData.fields[relationField]?.targetClass;
 
       if (!targetClassName) {

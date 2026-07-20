@@ -1,5 +1,6 @@
 import https from 'https';
-import { ALLOW_SELF_SIGNED } from './config.js';
+import http from 'http';
+import { ALLOW_SELF_SIGNED, PARSE_URL, PARSE_APP_ID, PARSE_REST_KEY, PARSE_MASTER_KEY } from './config.js';
 
 /**
  * Obtiene las relaciones (pointers y relations) de una clase en Parse Server
@@ -23,20 +24,29 @@ export async function getClassRelations(className) {
   }
   return relations;
 }
-const { PARSE_URL, PARSE_APP_ID, PARSE_REST_KEY, PARSE_MASTER_KEY } = process.env;
 
-// Agente HTTPS que permite certificados autofirmados si está configurado
-const httpsAgent = ALLOW_SELF_SIGNED
-  ? new https.Agent({ rejectUnauthorized: false })
-  : undefined;
+// Agentes para HTTP/HTTPS que permiten certificados autofirmados si está configurado
+const getAgent = (url) => {
+  if (!ALLOW_SELF_SIGNED) return undefined;
+  
+  if (url.startsWith('https://')) {
+    return new https.Agent({ rejectUnauthorized: false });
+  } else if (url.startsWith('http://')) {
+    return new http.Agent();
+  }
+  return undefined;
+};
 
 /**
  * Helper para llamar al REST API de Parse
  * @param {string} path - Ruta del endpoint (ej: /classes/MyClass)
  * @param {object} options - Opciones de fetch
- * @param {boolean} useMasterKey - Si usar master key en lugar de REST key (por defecto true si hay master key y no hay REST key)
+ * @param {boolean} useMasterKey - Si usar master key en lugar de REST key (por defecto true si hay master key disponible)
  */
-export async function parseRequest(path, options = {}, useMasterKey = !PARSE_REST_KEY && !!PARSE_MASTER_KEY) {
+export async function parseRequest(path, options = {}, useMasterKey = !!PARSE_MASTER_KEY) {
+  if (!PARSE_URL) {
+    throw new Error('PARSE_URL is not defined. Check your environment variables.');
+  }
   const url = `${PARSE_URL}${path}`;
 
   const headers = {
@@ -56,7 +66,7 @@ export async function parseRequest(path, options = {}, useMasterKey = !PARSE_RES
       ...headers,
       ...(options.headers || {}),
     },
-    agent: httpsAgent,
+    agent: getAgent(url),
   });
 
   if (!res.ok) {
@@ -72,6 +82,8 @@ export async function parseRequest(path, options = {}, useMasterKey = !PARSE_RES
  */
 export async function healthCheck() {
   try {
+    console.error('[mcp-parse-server] Debug - PARSE_URL en healthCheck:', PARSE_URL);
+    console.error('[mcp-parse-server] Debug - typeof PARSE_URL:', typeof PARSE_URL);
     await parseRequest('/health', {}, false);
     console.error('[mcp-parse-server] ✓ Conexión con Parse Server establecida');
   } catch (error) {
