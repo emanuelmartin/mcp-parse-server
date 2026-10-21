@@ -1,5 +1,8 @@
 # MCP Parse Server
 
+> **⚠️ Este repo usa pnpm desde el 2026-10-20.** Si ya lo tenías instalado con npm, después de bajar el cambio corre
+> una vez `bash scripts/pnpm-setup.sh` para reinstalar las dependencias (detalles en «Cambio de npm a pnpm», al final).
+
 Servidor MCP (Model Context Protocol) completo para Parse Server con funcionalidades de CRUD, gestión de schemas, roles, ACL y Cloud Functions.
 
 ## 🚀 Características
