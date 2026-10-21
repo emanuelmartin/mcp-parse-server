@@ -38,12 +38,12 @@ if ! command -v pnpm >/dev/null 2>&1 || [ "$($PNPM --version 2>/dev/null)" != "$
 fi
 
 # 3. Carpetas: cuáles son pnpm y cuáles siguen con npm (compatible con la bash 3.2 de macOS)
-PNPM_DIRS=$(git ls-files '*pnpm-lock.yaml' | xargs -n1 dirname 2>/dev/null | sort -u)
+PNPM_DIRS=$(git ls-files '*pnpm-lock.yaml' | xargs -n1 dirname 2>/dev/null | sort -u || true)
 # Siguen con npm: carpetas con package-lock.json (versionado o no) y submódulos de git (p. ej. cloud/)
-SUBMODULES=$(git config --file .gitmodules --get-regexp '\.path$' 2>/dev/null | awk '{print $2}')
+SUBMODULES=$( { [ -f .gitmodules ] && git config --file .gitmodules --get-regexp '\.path$'; } 2>/dev/null | awk '{print $2}' || true)
 NPM_DIRS=$( { git ls-files '*package-lock.json' | xargs -n1 dirname 2>/dev/null
               find . -name package-lock.json -not -path '*/node_modules/*' 2>/dev/null | xargs -n1 dirname | sed 's#^\./##'
-              echo "$SUBMODULES"; } | grep -v '^$' | sort -u)
+              echo "$SUBMODULES"; } | grep -v '^$' | sort -u || true)
 [ -n "$PNPM_DIRS" ] || { echo "Este repo no tiene pnpm-lock.yaml: nada que hacer."; exit 0; }
 
 is_npm_dir() {
