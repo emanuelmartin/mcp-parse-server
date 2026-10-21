@@ -1,5 +1,8 @@
 # MCP Parse Server
 
+> **⚠️ Este repo usa pnpm desde el 2026-10-20.** Si ya lo tenías instalado con npm, después de bajar el cambio corre
+> una vez `bash scripts/pnpm-setup.sh` para reinstalar las dependencias (detalles en «Cambio de npm a pnpm», al final).
+
 Servidor MCP (Model Context Protocol) completo para Parse Server con funcionalidades de CRUD, gestión de schemas, roles, ACL y Cloud Functions.
 
 ## 🚀 Características
@@ -48,8 +51,10 @@ Servidor MCP (Model Context Protocol) completo para Parse Server con funcionalid
 
 ## 📦 Instalación
 
+Requiere pnpm 11 (`corepack enable`); `npm install` queda bloqueado por el `preinstall`.
+
 ```bash
-npm install
+pnpm install --frozen-lockfile
 ```
 
 ## ⚙️ Configuración
@@ -77,13 +82,13 @@ ALLOW_SELF_SIGNED_CERT=true
 ### Iniciar el servidor
 
 ```bash
-npm start
+pnpm start
 ```
 
 ### Modo desarrollo (con watch)
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ## 📁 Estructura del Proyecto
@@ -226,3 +231,17 @@ MIT
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas. Por favor abre un issue o pull request.
+
+## Cambio de npm a pnpm (una sola vez, después de bajar el cambio)
+
+Este repo usa **pnpm** (`packageManager` en `package.json`). Si ya tenías el repo instalado con npm, corre una vez:
+
+```bash
+bash scripts/pnpm-setup.sh          # o: npm run setup:pnpm   (--dry-run para ver qué hará)
+```
+
+Instala pnpm de la versión del repo (con Volta o Corepack; usa Node 22 si tu Node es menor a 22.13), borra los
+`node_modules` que armó npm en las partes que ahora son pnpm y reinstala con `pnpm install --frozen-lockfile`.
+Las carpetas que siguen con npm (las que se instalan en servidores, con `package-lock.json`) no se tocan.
+Después: `pnpm install` y `pnpm run <script>`; `npm install` queda bloqueado. Un worktree nuevo sólo necesita `pnpm install`
+(pnpm reutiliza su store global, no vuelve a descargar paquetes).
