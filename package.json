@@ -8,7 +8,8 @@
     "preinstall": "npx only-allow pnpm",
     "start": "node index.mjs",
     "dev": "node --watch index.mjs",
-    "build": "node build.js"
+    "build": "node build.js",
+    "setup:pnpm": "bash scripts/pnpm-setup.sh"
   },
   "keywords": [
     "mcp",
