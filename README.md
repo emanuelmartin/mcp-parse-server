@@ -48,8 +48,10 @@ Servidor MCP (Model Context Protocol) completo para Parse Server con funcionalid
 
 ## 📦 Instalación
 
+Requiere pnpm 11 (`corepack enable`); `npm install` queda bloqueado por el `preinstall`.
+
 ```bash
-npm install
+pnpm install --frozen-lockfile
 ```
 
 ## ⚙️ Configuración
@@ -77,13 +79,13 @@ ALLOW_SELF_SIGNED_CERT=true
 ### Iniciar el servidor
 
 ```bash
-npm start
+pnpm start
 ```
 
 ### Modo desarrollo (con watch)
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ## 📁 Estructura del Proyecto

@@ -5,6 +5,7 @@
   "description": "MCP Server para Parse Server con funcionalidades completas de CRUD, schemas, roles y ACL",
   "main": "index.mjs",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "start": "node index.mjs",
     "dev": "node --watch index.mjs",
     "build": "node build.js"
@@ -20,5 +21,6 @@
     "zod": "^3.24.0",
     "dotenv": "^16.0.0",
     "node-fetch": "^3.3.2"
-  }
+  },
+  "packageManager": "pnpm@11.11.0"
 }
